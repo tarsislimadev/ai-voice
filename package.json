@@ -1,0 +1,17 @@
+{
+  "name": "ai-voice",
+  "version": "0.1.0",
+  "description": "Voices for AIs",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tarsislimadev/ai-voice.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tarsislimadev/ai-voice/issues"
+  },
+  "homepage": "https://github.com/tarsislimadev/ai-voice#readme"
+}
