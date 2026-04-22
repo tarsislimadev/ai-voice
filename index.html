@@ -1,1 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI voice</title>
+  <script type="importmap">
+    {
+      "imports": {
+        "afrontend": "https://cdn.jsdelivr.net/npm/afrontend@0.0.2/+esm"
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script type="module">
+    import { HTML } from 'afrontend'
+
+    class Page extends HTML {
+      onCreate() {
+        this.setText('Hello world!')
+      }
+    }
+
+    HTML.fromId('app').append(new Page())
+  </script>
+</body>
+
+</html>
