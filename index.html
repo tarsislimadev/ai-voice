@@ -1,32 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI voice</title>
-  <script type="importmap">
-    {
-      "imports": {
-        "afrontend": "https://cdn.jsdelivr.net/npm/afrontend@0.0.2/+esm"
-      }
-    }
-  </script>
+  <title>Speech Recognition + Ollama</title>
 </head>
-
 <body>
-  <div id="app"></div>
-  <script type="module">
-    import { HTML } from 'afrontend'
+  <button id="startBtn">Start Speaking</button>
+  <pre id="output"></pre>
 
-    class Page extends HTML {
-      onCreate() {
-        this.setText('Hello world!')
+  <script>
+    // Initialize SpeechRecognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    const output = document.getElementById('output');
+
+    // Start listening when button is clicked
+    document.getElementById('startBtn').addEventListener('click', () => {
+      recognition.start();
+    });
+
+    // Handle speech recognition result
+    recognition.addEventListener('result', async (event) => {
+      const transcript = event.results[0][0].transcript;
+      output.textContent = "You said: " + transcript;
+
+      // Send recognized text to Ollama API
+      try {
+        const response = await fetch("http://localhost:11434/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "voice",   // replace with the actual Ollama voice model name
+            prompt: transcript
+          })
+        });
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let ollamaOutput = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          ollamaOutput += decoder.decode(value, { stream: true });
+        }
+
+        output.textContent += "\nOllama response:\n" + ollamaOutput;
+      } catch (err) {
+        console.error(err);
+        output.textContent += "\nError calling Ollama API.";
       }
-    }
+    });
 
-    HTML.fromId('app').append(new Page())
+    recognition.addEventListener('error', (event) => {
+      console.error("Speech recognition error:", event.error);
+    });
   </script>
 </body>
-
 </html>
